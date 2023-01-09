@@ -7,7 +7,12 @@ const app = express();
 app.use(express.json());
 
 const repositories = [];
-
+repositories.techs =[
+  {"id":1,"Type":'React'},
+  {"id":2,"Type":'React-Native'},
+  {"id":3,"Type":'TypeScript'},
+  {"id":4,"Type":'ContextApi'},
+];
 app.get("/repositories", (request, response) => {
   return response.json(repositories);
 });
@@ -23,32 +28,31 @@ app.post("/repositories", (request, response) => {
     likes: 0
   };
 
-  return response.json(repository);
+  repositories.push(repository);
+
+  return response.status(201).json(repository);
 });
 
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
   const updatedRepository = request.body;
-
-  repositoryIndex = repositories.findindex(repository => repository.id === id);
-
-  if (repositoryIndex < 0) {
+  const repository = repositories.find(repo => repo.id === id);
+  if (!repository) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
-  const repository = { ...repositories[repositoryIndex], ...updatedRepository };
-
-  repositories[repositoryIndex] = repository;
-
+  repository.title = updatedRepository.title;
+  repository.url = updatedRepository.url;
+  repository.techs = updatedRepository.techs;
   return response.json(repository);
 });
 
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
 
-  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
-  if (repositoryIndex > 0) {
+  if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
@@ -60,15 +64,16 @@ app.delete("/repositories/:id", (request, response) => {
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
 
-  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const addLike = repositories.find(repository => repository.id === id);
 
-  if (repositoryIndex < 0) {
+  if (!addLike) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
-  const likes = ++repositories[repositoryIndex].likes;
-
-  return response.json('likes');
+  const likes = addLike.likes++;
+  repositories.map(rep=> rep.likes === likes)
+  
+  return response.json(addLike);
 });
 
 module.exports = app;
