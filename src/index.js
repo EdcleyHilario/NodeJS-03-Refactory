@@ -7,12 +7,7 @@ const app = express();
 app.use(express.json());
 
 const repositories = [];
-repositories.techs =[
-  {"id":1,"Type":'React'},
-  {"id":2,"Type":'React-Native'},
-  {"id":3,"Type":'TypeScript'},
-  {"id":4,"Type":'ContextApi'},
-];
+
 app.get("/repositories", (request, response) => {
   return response.json(repositories);
 });
